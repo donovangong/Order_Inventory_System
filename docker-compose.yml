@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: order_inventory_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  product-service:
+    build: ./product-service
+    container_name: product_service
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: orders_db
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+
+  order-service:
+    build: ./order-service
+    container_name: order_service
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: orders_db
+      PRODUCT_SERVICE_URL: http://product-service:3001
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+      - product-service
+
+  frontend:
+    build: ./frontend
+    container_name: ugly_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - product-service
+      - order-service

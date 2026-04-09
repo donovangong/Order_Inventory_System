@@ -1,0 +1,33 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 10px;
+  background: #f3f3f3;
+  color: #111;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #bbb;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+input {
+  width: 60px;
+  margin-right: 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+#message {
+  margin-bottom: 15px;
+  color: #b00020;
+}
