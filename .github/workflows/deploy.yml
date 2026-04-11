@@ -25,4 +25,7 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install ca2 ./helm/ca2 -n ca2 --create-namespace
+          sudo cp /etc/rancher/k3s/k3s.yaml $RUNNER_TEMP/k3s.yaml
+          sudo chown $USER:$USER $RUNNER_TEMP/k3s.yaml
+          chmod 600 $RUNNER_TEMP/k3s.yaml
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install ca2 ./helm/ca2 -n ca2 --create-namespace
