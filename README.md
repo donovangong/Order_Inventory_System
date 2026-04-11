@@ -111,7 +111,7 @@ Default database values:
 - Password: `postgres`
 - Database: `orders_db`
 
-## Run Locally With Docker Compose
+## Run Locally
 
 Local URLs:
 
