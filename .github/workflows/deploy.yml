@@ -14,14 +14,14 @@ jobs:
       - name: Build Docker images
         run: |
           docker build -t ca2-frontend:latest ./frontend
-          docker build -t ca2-product:latest ./product-service
-          docker build -t ca2-order:latest ./order-service
+          docker build -t ca2-product-service:latest ./product-service
+          docker build -t ca2-order-service:latest ./order-service
 
       - name: Import images into k3s
         run: |
-          docker save ca2-frontend:latest | sudo k3s ctr images import -
-          docker save ca2-product:latest | sudo k3s ctr images import -
-          docker save ca2-order:latest | sudo k3s ctr images import -
+          docker save ca2-frontend:latest | sudo /usr/local/bin/k3s ctr images import -
+          docker save ca2-product-service:latest | sudo /usr/local/bin/k3s ctr images import -
+          docker save ca2-order-service:latest | sudo /usr/local/bin/k3s ctr images import -
 
       - name: Deploy with Helm
         run: |
