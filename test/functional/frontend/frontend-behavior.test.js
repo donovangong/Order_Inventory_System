@@ -5,7 +5,7 @@ const test = require("node:test");
 const vm = require("vm");
 const { createFakeDocument } = require("../helpers/fake-env");
 
-const root = path.resolve(__dirname, "..", "..");
+const root = path.resolve(__dirname, "..", "..", "..");
 const frontendDir = path.join(root, "services", "frontend");
 
 function runFrontendScript(fileName, document, fetchMock) {
