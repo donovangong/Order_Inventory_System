@@ -8,14 +8,17 @@ on:
 jobs:
     build:
         name: 1_Build 
-        uses: ./.github/workflows/build.yml
-        #secrets: inherit
+        uses: ./.github/workflows/1_build.yml
+
     
-    
-    
-    
+    functional_test:
+        name: 2_Functional_Test
+        uses: ./.github/workflows/2_functional-test.yml
+        needs: build
+
+
     deploy:
         name: 4_Deploy
-        uses: ./.github/workflows/deploy.yml
-        needs: build
-        #secrets: inherit     
+        uses: ./.github/workflows/3_deploy.yml
+        needs: functional_test
+    
