@@ -10,8 +10,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run frontend functional tests
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: Run functional tests
         run: |
-          node test/frontend/frontend-behavior.test.js
+          node test/functional/run-functional-tests.js

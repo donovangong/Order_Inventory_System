@@ -18,7 +18,7 @@ jobs:
 
 
     deploy:
-        name: 4_Deploy
+        name: 3_Deploy
         uses: ./.github/workflows/3_deploy.yml
         needs: functional_test
     
