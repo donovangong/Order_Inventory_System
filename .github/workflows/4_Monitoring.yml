@@ -9,10 +9,18 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Prepare kubeconfig
         run: |
           cp /etc/rancher/k3s/k3s.yaml $RUNNER_TEMP/k3s.yaml
           chmod 600 $RUNNER_TEMP/k3s.yaml
+
+      - name: Apply Grafana dashboard ConfigMap
+        run: |
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl create namespace monitoring --dry-run=client -o yaml | KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl apply -f -
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n monitoring create configmap ca2-grafana-dashboard --from-file=ca2-dashboard.json=resources/grafana/dashboards/ca2-dashboard.json --dry-run=client -o yaml | KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl apply -f -
 
       - name: Install Prometheus and Grafana
         run: |
@@ -20,7 +28,7 @@ jobs:
             KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
             KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
           fi
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace -f resources/helm/monitoring-values.yaml
 
       - name: Wait for monitoring rollout
         run: |

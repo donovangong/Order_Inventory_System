@@ -1,0 +1,19 @@
+grafana:
+  defaultDashboardsEnabled: true
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: ca2
+          orgId: 1
+          folder: CA2
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/ca2
+  dashboardsConfigMaps:
+    ca2: ca2-grafana-dashboard
+  grafana.ini:
+    dashboards:
+      default_home_dashboard_path: /var/lib/grafana/dashboards/ca2/ca2-dashboard.json
