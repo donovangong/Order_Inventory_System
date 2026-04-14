@@ -61,7 +61,7 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
   }
 
   try {
-    console.log("POST /orders", req.body);
+    console.log("POST /orders", { productId, quantity });
 
     const productPath = encodeURIComponent(String(productId));
     const productResponse = await fetch(`${productServiceUrl}/products/${productPath}`);
@@ -117,13 +117,19 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
     }
   });
 
-  app.get(["/orders/:id", "/api/orders/:id"], async (req, res) => {
-    try {
-      console.log("GET /orders/:id", req.params.id);
-      const result = await pool.query(
-        "SELECT id, product_id, quantity, total_price, created_at FROM orders WHERE id = $1",
-        [req.params.id]
-      );
+app.get(["/orders/:id", "/api/orders/:id"], async (req, res) => {
+  const orderId = Number(req.params.id);
+
+  if (!Number.isInteger(orderId) || orderId < 1) {
+    return res.status(400).json({ error: "Valid order id is required" });
+  }
+
+  try {
+    console.log("GET /orders/:id", { orderId });
+    const result = await pool.query(
+      "SELECT id, product_id, quantity, total_price, created_at FROM orders WHERE id = $1",
+      [orderId]
+    );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Order not found" });
@@ -134,15 +140,21 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
       console.error("Error fetching order:", error.message);
       res.status(500).json({ error: "Failed to fetch order" });
     }
-  });
+});
 
-  app.delete(["/orders/:id", "/api/orders/:id"], checkAdmin, async (req, res) => {
-    try {
-      console.log("DELETE /orders/:id", req.params.id);
-      const result = await pool.query(
-        "DELETE FROM orders WHERE id = $1 RETURNING id",
-        [req.params.id]
-      );
+app.delete(["/orders/:id", "/api/orders/:id"], checkAdmin, async (req, res) => {
+  const orderId = Number(req.params.id);
+
+  if (!Number.isInteger(orderId) || orderId < 1) {
+    return res.status(400).json({ error: "Valid order id is required" });
+  }
+
+  try {
+    console.log("DELETE /orders/:id", { orderId });
+    const result = await pool.query(
+      "DELETE FROM orders WHERE id = $1 RETURNING id",
+      [orderId]
+    );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Order not found" });
