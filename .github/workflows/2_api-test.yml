@@ -20,6 +20,11 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package.json
+            services/product-service/package.json
+            services/order-service/package.json
 
       - name: Install coverage tools and service dependencies
         run: |
