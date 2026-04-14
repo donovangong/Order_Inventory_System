@@ -67,13 +67,13 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: package.json
+          cache-dependency-path: test/package.json
 
       - name: Install coverage tools
-        run: npm install
+        run: npm --prefix test install
 
       - name: Run functional tests
-        run: npm run test:functional:coverage
+        run: npm --prefix test run test:functional:coverage
 
       - name: Upload functional coverage
         uses: actions/upload-artifact@v4

@@ -22,14 +22,14 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: |
-            package.json
+            test/package.json
             services/product-service/package.json
             services/order-service/package.json
 
       - name: Install coverage tools and service dependencies
         run: |
-          npm install
-          npm run install:services
+          npm --prefix test install
+          npm --prefix test run install:services
 
       - name: Prepare kubeconfig
         run: |
@@ -57,14 +57,14 @@ jobs:
         run: node test/helpers/wait-for-services.js
 
       - name: Run API coverage tests
-        run: npm run test:api:coverage
+        run: npm --prefix test run test:api:coverage
 
       - name: Run API tests
         env:
           PRODUCT_SERVICE_URL: http://127.0.0.1:${{ env.PRODUCT_SERVICE_LOCAL_PORT }}
           ORDER_SERVICE_URL: http://127.0.0.1:${{ env.ORDER_SERVICE_LOCAL_PORT }}
           FRONTEND_URL: http://127.0.0.1:${{ env.FRONTEND_LOCAL_PORT }}
-        run: npm run test:api:deployed
+        run: npm --prefix test run test:api:deployed
 
       - name: Upload API coverage
         uses: actions/upload-artifact@v4
