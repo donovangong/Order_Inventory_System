@@ -1,0 +1,28 @@
+name: 3_dependency-check
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  dependency_check:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        with:
+          project: 'ca2-order-inventory'
+          path: '.'
+          format: 'HTML'    
+          args: >
+            --failOnCVSS 8            
+          
+      - name: Upload Test results
+        uses: actions/upload-artifact@v4
+        with:
+           name: dependency-check-report
+           path: ${{github.workspace}}/reports

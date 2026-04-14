@@ -48,6 +48,32 @@ jobs:
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl delete namespace ca2 || true
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl wait --for=delete namespace/ca2 --timeout=60s || true
 
+      - name: Install KEDA
+        run: |
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add kedacore https://kedacore.github.io/charts --force-update
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install keda kedacore/keda -n keda --create-namespace
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n keda rollout status deployment/keda-operator --timeout=120s
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n keda rollout status deployment/keda-operator-metrics-apiserver --timeout=120s
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n keda rollout status deployment/keda-admission-webhooks --timeout=120s
+
       - name: Deploy with Helm
         run: |
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install ca2 ./resources/helm/ca2 -n ca2 --create-namespace
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Install coverage tools
+        run: npm install
+
+      - name: Run functional tests
+        run: npm run test:functional:coverage
+
+      - name: Upload functional coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: functional-coverage
+          path: coverage/functional/lcov.info

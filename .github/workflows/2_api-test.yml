@@ -1,12 +1,11 @@
-name: 2_functional-test
+name: 2_api-test
 
 on:
   workflow_dispatch:
   workflow_call:
 
-
 jobs:
-  functional-test:
+  api-test:
     runs-on: self-hosted
     env:
       PRODUCT_SERVICE_LOCAL_PORT: ${{ vars.PRODUCT_SERVICE_LOCAL_PORT || '3001' }}
@@ -16,28 +15,54 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-        
+
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 24
+
+      - name: Install coverage tools and service dependencies
+        run: |
+          npm install
+          npm run install:services
 
       - name: Prepare kubeconfig
         run: |
           cp /etc/rancher/k3s/k3s.yaml $RUNNER_TEMP/k3s.yaml
           chmod 600 $RUNNER_TEMP/k3s.yaml
 
+      - name: Wait for Kubernetes deployment rollout
+        run: |
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/postgres --timeout=120s
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/product-service --timeout=120s
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/order-service --timeout=120s
+          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/frontend --timeout=120s
+
       - name: Start local service tunnels
         run: |
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 port-forward svc/product-service "$PRODUCT_SERVICE_LOCAL_PORT:3001" > product-service-port-forward.log 2>&1 &
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 port-forward svc/order-service "$ORDER_SERVICE_LOCAL_PORT:3002" > order-service-port-forward.log 2>&1 &
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 port-forward svc/frontend "$FRONTEND_LOCAL_PORT:80" > frontend-port-forward.log 2>&1 &
-          sleep 5
-          
-      - name: Run functional tests
+
+      - name: Wait for services
         env:
           PRODUCT_SERVICE_URL: http://127.0.0.1:${{ env.PRODUCT_SERVICE_LOCAL_PORT }}
           ORDER_SERVICE_URL: http://127.0.0.1:${{ env.ORDER_SERVICE_LOCAL_PORT }}
           FRONTEND_URL: http://127.0.0.1:${{ env.FRONTEND_LOCAL_PORT }}
-        run: |
-          node test/functional/run-functional-tests.js
+        run: node test/helpers/wait-for-services.js
+
+      - name: Run API coverage tests
+        run: npm run test:api:coverage
+
+      - name: Run API tests
+        env:
+          PRODUCT_SERVICE_URL: http://127.0.0.1:${{ env.PRODUCT_SERVICE_LOCAL_PORT }}
+          ORDER_SERVICE_URL: http://127.0.0.1:${{ env.ORDER_SERVICE_LOCAL_PORT }}
+          FRONTEND_URL: http://127.0.0.1:${{ env.FRONTEND_LOCAL_PORT }}
+        run: npm run test:api:deployed
+
+      - name: Upload API coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-coverage
+          path: coverage/api/lcov.info

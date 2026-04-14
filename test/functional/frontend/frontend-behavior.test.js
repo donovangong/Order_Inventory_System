@@ -9,7 +9,8 @@ const root = path.resolve(__dirname, "..", "..", "..");
 const frontendDir = path.join(root, "services", "frontend");
 
 function runFrontendScript(fileName, document, fetchMock) {
-  const code = fs.readFileSync(path.join(frontendDir, fileName), "utf8");
+  const filePath = path.join(frontendDir, fileName);
+  const code = fs.readFileSync(filePath, "utf8");
   const context = {
     document,
     fetch: fetchMock,
@@ -20,7 +21,7 @@ function runFrontendScript(fileName, document, fetchMock) {
   };
 
   vm.createContext(context);
-  vm.runInContext(code, context);
+  new vm.Script(code, { filename: filePath }).runInContext(context);
   return context;
 }
 

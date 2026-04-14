@@ -1,0 +1,25 @@
+name: 3_sonarqube
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  sonarqube:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          path: coverage
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

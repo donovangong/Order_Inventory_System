@@ -7,12 +7,35 @@ on:
 
 jobs:
     build_deploy:
-        name: 1_Build_Deploy
+        name: 1_Build_Deploy_Functional_Test
         uses: "./.github/workflows/1_build & deploy.yml"
+        secrets: inherit
 
-    
-    functional_test:
-        name: 2_Functional_Test
-        uses: ./.github/workflows/2_functional-test.yml
+    api_test:
+        name: 2_API_Test
+        uses: ./.github/workflows/2_api-test.yml
         needs: build_deploy
+        secrets: inherit
+
+    integration_test:
+        name: 2_Integration_Test
+        uses: ./.github/workflows/2_integration-test.yml
+        needs: build_deploy
+        secrets: inherit
+
+    sonarqube:
+        name: 3_SonarQube
+        uses: ./.github/workflows/3_sonarqube.yml
+        needs:
+          - api_test
+          - integration_test
+        secrets: inherit
+
+    dependency_check:
+        name: 3_Dependency_Check
+        uses: ./.github/workflows/3_dependency.yml
+        needs:
+          - api_test
+          - integration_test
+        secrets: inherit
     
