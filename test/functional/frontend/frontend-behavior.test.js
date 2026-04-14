@@ -28,6 +28,20 @@ function runFrontendScript(fileName, document, fetchMock) {
   return context;
 }
 
+async function waitFor(predicate, message) {
+  const deadline = Date.now() + 1000;
+
+  while (Date.now() < deadline) {
+    if (predicate()) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+
+  assert.fail(message);
+}
+
 test("products can be loaded and rendered", async () => {
   const document = createFakeDocument(["products", "message", "refresh-products"]);
   const products = [
@@ -45,7 +59,10 @@ test("products can be loaded and rendered", async () => {
   };
 
   runFrontendScript("app.js", document, fetchMock);
-  await new Promise((resolve) => setImmediate(resolve));
+  await waitFor(
+    () => document.getElementById("products").innerHTML.includes("Stock: 10"),
+    "products should render stock information"
+  );
 
   const productsHtml = document.getElementById("products").innerHTML;
 
@@ -77,7 +94,10 @@ test("orders can be loaded and rendered", async () => {
   };
 
   runFrontendScript("orders.js", document, fetchMock);
-  await new Promise((resolve) => setImmediate(resolve));
+  await waitFor(
+    () => document.getElementById("orders").innerHTML.includes("ID: 10"),
+    "orders should render order information"
+  );
 
   const ordersHtml = document.getElementById("orders").innerHTML;
 
@@ -124,7 +144,10 @@ test("management update flow sends a PUT request with admin headers", async () =
 
   runFrontendScript("mgmt.js", document, fetchMock);
   await document.getElementById("login-button").click();
-  await new Promise((resolve) => setImmediate(resolve));
+  await waitFor(
+    () => document.buttons.some((button) => button.dataset.id === "1" && button.listeners.click),
+    "management page should render a clickable save button"
+  );
 
   document.getElementById("price-1").value = "59.99";
   document.getElementById("stock-1").value = "15";
@@ -133,7 +156,10 @@ test("management update flow sends a PUT request with admin headers", async () =
   assert.ok(saveButton, "management page should render a save button for product 1");
 
   await saveButton.click();
-  await new Promise((resolve) => setImmediate(resolve));
+  await waitFor(
+    () => fetchCalls.some((call) => call.options.method === "PUT"),
+    "management flow should send a PUT request"
+  );
 
   const putCall = fetchCalls.find((call) => call.options.method === "PUT");
 
