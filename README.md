@@ -1,11 +1,28 @@
-# CA2 Recipe Management Application
+# Order Inventory System
 
-This project is a microservice-based recipe management application for Enterprise Architecture Deployment CA2. It includes a Node.js frontend, a Spring Boot backend API, MongoDB Atlas as the data layer, Docker containerisation, Helm-based k3s deployment, KEDA autoscaling, functional tests, and SonarCloud analysis.
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=donovangong_ca22&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=donovangong_ca22)
+[![CI/CD](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml/badge.svg)](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml)
 
-## Members
+A cloud-native order and inventory platform built with a microservice architecture, designed for product stock management, order processing, automated deployment, and observability.
 
+## Contributors
 - Chenghan Gong
 - Ajinkya Sawale
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=donovangong_ca22&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=donovangong_ca22)
-[![M_HQ_Control](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml/badge.svg)](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml)
+## Overview
+The system includes a static frontend, a product service, an order service, and PostgreSQL for persistent storage. It is containerized with Docker and deployed to k3s using Helm.
+
+## Features
+- Product inventory and stock management
+- Customer order creation and history tracking
+- Kubernetes-based deployment with Helm
+- Autoscaling with KEDA
+- Monitoring with Prometheus and Grafana
+- CI/CD with GitHub Actions
+- Code quality analysis with SonarCloud
+
+## Deployment
+The application runs on k3s and is deployed through the Helm chart under `resources/helm/ca2`.
+
+## Pipeline
+The pipeline builds images, deploys a test environment, runs functional/API/integration tests, performs dependency and quality checks, provisions monitoring, and completes the final deployment.
