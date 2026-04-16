@@ -99,7 +99,6 @@ jobs:
         if: failure() && env.HELM_DEPLOYED == 'true'
         run: |
           KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm rollback ca2 -n ca2 || true
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/postgres --timeout=180s || true
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/product-service --timeout=180s || true
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/order-service --timeout=180s || true
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/frontend --timeout=180s || true
+          for deployment in postgres product-service order-service frontend; do
+            KUBECONFIG=$RUNNER_TEMP/k3s.yaml kubectl -n ca2 rollout status deployment/$deployment --timeout=180s || true
+          done

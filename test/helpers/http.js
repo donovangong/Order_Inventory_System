@@ -56,8 +56,6 @@ module.exports = {
   PRODUCT_SERVICE_URL,
   ORDER_SERVICE_URL,
   FRONTEND_URL,
-  ADMIN_USER,
-  ADMIN_PASSWORD,
   request,
   assertStatus,
   assertJsonArray,

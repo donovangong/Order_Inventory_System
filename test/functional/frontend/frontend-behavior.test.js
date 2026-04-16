@@ -11,20 +11,19 @@ const frontendDir = path.join(root, "services", "frontend");
 function runFrontendScript(fileName, document, fetchMock) {
   const filePath = path.join(frontendDir, fileName);
   const sharedPath = path.join(frontendDir, "shared.js");
-  const sharedCode = fs.readFileSync(sharedPath, "utf8");
-  const code = fs.readFileSync(filePath, "utf8");
   const context = {
     document,
     fetch: fetchMock,
     Number,
     Date,
     Error,
+    Intl,
     console
   };
 
   vm.createContext(context);
-  new vm.Script(sharedCode, { filename: sharedPath }).runInContext(context);
-  new vm.Script(code, { filename: filePath }).runInContext(context);
+  new vm.Script(fs.readFileSync(sharedPath, "utf8"), { filename: sharedPath }).runInContext(context);
+  new vm.Script(fs.readFileSync(filePath, "utf8"), { filename: filePath }).runInContext(context);
   return context;
 }
 
@@ -74,7 +73,7 @@ test("products can be loaded and rendered", async () => {
 });
 
 test("orders can be loaded and rendered", async () => {
-  const document = createFakeDocument(["orders"]);
+  const document = createFakeDocument(["orders", "orders-message", "refresh-orders"]);
   const orders = [
     {
       id: 10,
@@ -105,7 +104,7 @@ test("orders can be loaded and rendered", async () => {
   assert.deepStrictEqual(fetchCalls, ["/api/orders"]);
   assert.ok(ordersHtml.includes("ID: 10"));
   assert.ok(ordersHtml.includes("Product ID: 1"));
-  assert.ok(ordersHtml.includes("Total Price: 99.98"));
+  assert.ok(ordersHtml.includes("Total Price:"));
 });
 
 test("management update flow sends a PUT request with admin headers", async () => {

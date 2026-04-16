@@ -29,10 +29,7 @@ class FakeElement {
   }
 
   click() {
-    if (this.listeners.click) {
-      return this.listeners.click();
-    }
-    return undefined;
+    return this.listeners.click?.();
   }
 }
 

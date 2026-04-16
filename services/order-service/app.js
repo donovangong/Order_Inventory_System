@@ -52,30 +52,28 @@ function createApp(options = {}) {
     }
   });
 
-app.post(["/orders", "/api/orders"], async (req, res) => {
-  const { product_id, quantity } = req.body;
-  const productId = Number(product_id);
+  app.post(["/orders", "/api/orders"], async (req, res) => {
+    const { product_id, quantity } = req.body;
+    const productId = Number(product_id);
+    const orderQuantity = Number(quantity);
 
-  if (!Number.isInteger(productId) || productId < 1 || !quantity || quantity < 1) {
-    return res.status(400).json({ error: "product_id and valid quantity are required" });
-  }
+    if (!Number.isInteger(productId) || productId < 1 || !Number.isInteger(orderQuantity) || orderQuantity < 1) {
+      return res.status(400).json({ error: "product_id and valid quantity are required" });
+    }
 
-  try {
-    console.log("POST /orders", { productId, quantity });
-
-    const productPath = encodeURIComponent(String(productId));
-    const productResponse = await fetch(`${productServiceUrl}/products/${productPath}`);
+    try {
+      const productResponse = await fetch(`${productServiceUrl}/products/${productId}`);
       const product = await productResponse.json();
 
       if (!productResponse.ok) {
         return res.status(productResponse.status).json({ error: product.error || "Product lookup failed" });
       }
 
-      if (quantity > product.stock) {
+      if (orderQuantity > product.stock) {
         return res.status(400).json({ error: "Not enough stock" });
       }
 
-      const totalPrice = Number(product.price) * Number(quantity);
+      const totalPrice = Number(product.price) * orderQuantity;
       const client = await pool.connect();
 
       try {
@@ -85,10 +83,10 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
           `INSERT INTO orders (product_id, quantity, total_price)
            VALUES ($1, $2, $3)
            RETURNING id, product_id, quantity, total_price, created_at`,
-          [productId, quantity, totalPrice]
+          [productId, orderQuantity, totalPrice]
         );
 
-        await client.query("UPDATE products SET stock = stock - $1 WHERE id = $2", [quantity, productId]);
+        await client.query("UPDATE products SET stock = stock - $1 WHERE id = $2", [orderQuantity, productId]);
         await client.query("COMMIT");
 
         res.status(201).json(orderResult.rows[0]);
@@ -106,7 +104,6 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
 
   app.get(["/orders", "/api/orders"], async (req, res) => {
     try {
-      console.log("GET /orders");
       const result = await pool.query(
         "SELECT id, product_id, quantity, total_price, created_at FROM orders ORDER BY id DESC"
       );
@@ -117,19 +114,18 @@ app.post(["/orders", "/api/orders"], async (req, res) => {
     }
   });
 
-app.get(["/orders/:id", "/api/orders/:id"], async (req, res) => {
-  const orderId = Number(req.params.id);
+  app.get(["/orders/:id", "/api/orders/:id"], async (req, res) => {
+    const orderId = Number(req.params.id);
 
-  if (!Number.isInteger(orderId) || orderId < 1) {
-    return res.status(400).json({ error: "Valid order id is required" });
-  }
+    if (!Number.isInteger(orderId) || orderId < 1) {
+      return res.status(400).json({ error: "Valid order id is required" });
+    }
 
-  try {
-    console.log("GET /orders/:id", { orderId });
-    const result = await pool.query(
-      "SELECT id, product_id, quantity, total_price, created_at FROM orders WHERE id = $1",
-      [orderId]
-    );
+    try {
+      const result = await pool.query(
+        "SELECT id, product_id, quantity, total_price, created_at FROM orders WHERE id = $1",
+        [orderId]
+      );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Order not found" });
@@ -140,21 +136,20 @@ app.get(["/orders/:id", "/api/orders/:id"], async (req, res) => {
       console.error("Error fetching order:", error.message);
       res.status(500).json({ error: "Failed to fetch order" });
     }
-});
+  });
 
-app.delete(["/orders/:id", "/api/orders/:id"], checkAdmin, async (req, res) => {
-  const orderId = Number(req.params.id);
+  app.delete(["/orders/:id", "/api/orders/:id"], checkAdmin, async (req, res) => {
+    const orderId = Number(req.params.id);
 
-  if (!Number.isInteger(orderId) || orderId < 1) {
-    return res.status(400).json({ error: "Valid order id is required" });
-  }
+    if (!Number.isInteger(orderId) || orderId < 1) {
+      return res.status(400).json({ error: "Valid order id is required" });
+    }
 
-  try {
-    console.log("DELETE /orders/:id", { orderId });
-    const result = await pool.query(
-      "DELETE FROM orders WHERE id = $1 RETURNING id",
-      [orderId]
-    );
+    try {
+      const result = await pool.query(
+        "DELETE FROM orders WHERE id = $1 RETURNING id",
+        [orderId]
+      );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Order not found" });

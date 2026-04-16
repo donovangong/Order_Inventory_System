@@ -46,7 +46,6 @@ function createApp(pool = createPool()) {
 
   app.get(["/products", "/api/products"], async (req, res) => {
     try {
-      console.log("GET /products");
       const result = await pool.query("SELECT id, name, price, stock FROM products ORDER BY id");
       res.json(result.rows);
     } catch (error) {
@@ -55,19 +54,18 @@ function createApp(pool = createPool()) {
     }
   });
 
-app.get(["/products/:id", "/api/products/:id"], async (req, res) => {
-  const productId = Number(req.params.id);
+  app.get(["/products/:id", "/api/products/:id"], async (req, res) => {
+    const productId = Number(req.params.id);
 
-  if (!Number.isInteger(productId) || productId < 1) {
-    return res.status(400).json({ error: "Valid product id is required" });
-  }
+    if (!Number.isInteger(productId) || productId < 1) {
+      return res.status(400).json({ error: "Valid product id is required" });
+    }
 
-  try {
-    console.log("GET /products/:id", { productId });
-    const result = await pool.query(
-      "SELECT id, name, price, stock FROM products WHERE id = $1",
-      [productId]
-    );
+    try {
+      const result = await pool.query(
+        "SELECT id, name, price, stock FROM products WHERE id = $1",
+        [productId]
+      );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Product not found" });
@@ -78,29 +76,28 @@ app.get(["/products/:id", "/api/products/:id"], async (req, res) => {
       console.error("Error fetching product:", error.message);
       res.status(500).json({ error: "Failed to fetch product" });
     }
-});
+  });
 
-app.put(["/products/:id", "/api/products/:id"], checkAdmin, async (req, res) => {
-  const { price, stock } = req.body;
-  const productId = Number(req.params.id);
+  app.put(["/products/:id", "/api/products/:id"], checkAdmin, async (req, res) => {
+    const { price, stock } = req.body;
+    const productId = Number(req.params.id);
 
-  if (!Number.isInteger(productId) || productId < 1) {
-    return res.status(400).json({ error: "Valid product id is required" });
-  }
+    if (!Number.isInteger(productId) || productId < 1) {
+      return res.status(400).json({ error: "Valid product id is required" });
+    }
 
-  if (price === undefined || stock === undefined || price < 0 || stock < 0) {
-    return res.status(400).json({ error: "Valid price and stock are required" });
-  }
+    if (price === undefined || stock === undefined || price < 0 || stock < 0) {
+      return res.status(400).json({ error: "Valid price and stock are required" });
+    }
 
-  try {
-    console.log("PUT /products/:id", { productId });
-    const result = await pool.query(
-      `UPDATE products
-       SET price = $1, stock = $2
-       WHERE id = $3
-       RETURNING id, name, price, stock`,
-      [price, stock, productId]
-    );
+    try {
+      const result = await pool.query(
+        `UPDATE products
+         SET price = $1, stock = $2
+         WHERE id = $3
+         RETURNING id, name, price, stock`,
+        [price, stock, productId]
+      );
 
       if (!result.rows.length) {
         return res.status(404).json({ error: "Product not found" });

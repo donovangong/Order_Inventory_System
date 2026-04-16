@@ -1,13 +1,10 @@
-const PRODUCT_API = "/api";
-const ORDER_API = "/api";
-
 async function loadProducts() {
   const productsDiv = document.getElementById("products");
   const messageDiv = document.getElementById("message");
 
   try {
     showLoadingState(productsDiv, "Loading products...");
-    const products = await fetchJson(`${PRODUCT_API}/products`);
+    const products = await fetchJson(`${API_BASE}/products`);
 
     clearMessage(messageDiv);
 
@@ -91,7 +88,7 @@ async function loadProducts() {
         button.textContent = "Processing...";
 
         try {
-          const data = await fetchJson(`${ORDER_API}/orders`, {
+          const data = await fetchJson(`${API_BASE}/orders`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ product_id: productId, quantity })

@@ -1,5 +1,3 @@
-const PRODUCT_API = "/api";
-
 let adminUser = "";
 let adminPassword = "";
 
@@ -32,7 +30,7 @@ async function loadAdminProducts() {
 
   try {
     showLoadingState(productsDiv, "Loading products...");
-    const products = await fetchJson(`${PRODUCT_API}/products`);
+    const products = await fetchJson(`${API_BASE}/products`);
     clearMessage(messageDiv);
 
     if (!products.length) {
@@ -52,11 +50,11 @@ async function loadAdminProducts() {
         </div>
       </div>
 
-      <div class="form-grid compact-grid">
+      <div class="form-grid">
         <div class="field-group">
           <label for="price-${product.id}">Price</label>
           <input
-            class="input input-wide"
+            class="input"
             type="number"
             min="0"
             step="0.01"
@@ -68,7 +66,7 @@ async function loadAdminProducts() {
         <div class="field-group">
           <label for="stock-${product.id}">Stock</label>
           <input
-            class="input input-wide"
+            class="input"
             type="number"
             min="0"
             value="${product.stock}"
@@ -112,7 +110,7 @@ async function updateProduct(productId, button) {
   button.textContent = "Saving...";
 
   try {
-    await fetchJson(`${PRODUCT_API}/products/${productId}`, {
+    await fetchJson(`${API_BASE}/products/${productId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
