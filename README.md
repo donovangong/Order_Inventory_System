@@ -1,8 +1,10 @@
 # Order Inventory System
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=donovangong_ca22&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=donovangong_ca22)
 [![CI/CD](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml/badge.svg)](https://github.com/donovangong/Order_Inventory_System/actions/workflows/M_HQ_Control.yml)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=donovangong_ca22&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=donovangong_ca22)
+![Docker](https://img.shields.io/badge/docker-ready-blue)
+![Kubernetes](https://img.shields.io/badge/kubernetes-k3s%20deployed-326ce5)
+![Helm](https://img.shields.io/badge/helm-chart-0f1689)
 A cloud-native order and inventory platform built with a microservice architecture, designed for product stock management, order processing, automated deployment, and observability.
 
 ## Contributors
