@@ -5,6 +5,7 @@
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 ![Kubernetes](https://img.shields.io/badge/kubernetes-k3s%20deployed-326ce5)
 ![Helm](https://img.shields.io/badge/helm-chart-0f1689)
+
 A cloud-native order and inventory platform built with a microservice architecture, designed for product stock management, order processing, automated deployment, and observability.
 
 ## Contributors
