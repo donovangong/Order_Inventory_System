@@ -33,8 +33,8 @@ jobs:
         secrets: inherit
 
     trivy_project_scan:
-        name: 3_Trivy_Project_Scan
-        uses: ./.github/workflows/3_Trivy_Project_Scan.yml
+        name: 2_Trivy_Project_Scan
+        uses: ./.github/workflows/2_Trivy_Project_Scan.yml
         needs: build_deploy
         secrets: inherit
 
@@ -45,7 +45,7 @@ jobs:
           - functional_test
           - api_test
           - integration_test
-          - dependency_check
+          - trivy_project_scan
         secrets: inherit
 
     dependency_check:
