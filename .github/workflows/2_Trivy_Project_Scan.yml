@@ -12,11 +12,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Prepare Trivy cache
+        run: mkdir -p ~/.cache/trivy
+
       - name: Trivy scan full project
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .
+          cache-dir: ~/.cache/trivy
           scanners: vuln,secret,misconfig
           severity: HIGH,CRITICAL
           ignore-unfixed: true

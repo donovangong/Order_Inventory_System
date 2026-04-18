@@ -24,11 +24,23 @@ jobs:
 
       - name: Install Prometheus and Grafana
         run: |
+          retry() {
+            local attempt=1
+            local max_attempts=3
+            until "$@"; do
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                return 1
+              fi
+              attempt=$((attempt + 1))
+              sleep 20
+            done
+          }
+
           if ! KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm status monitoring -n monitoring >/dev/null 2>&1; then
-            KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
-            KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
+            retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+            retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
           fi
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace -f resources/helm/monitoring-values.yaml
+          retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --version 83.6.0 -n monitoring --create-namespace -f resources/helm/monitoring-values.yaml
 
       - name: Wait for Grafana rollout
         run: |

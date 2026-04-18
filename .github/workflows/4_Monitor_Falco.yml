@@ -19,9 +19,21 @@ jobs:
 
       - name: Install Falco runtime security monitoring
         run: |
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add falcosecurity https://falcosecurity.github.io/charts --force-update
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
-          KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install falco falcosecurity/falco -n falco --create-namespace -f resources/falco/falco-values.yaml
+          retry() {
+            local attempt=1
+            local max_attempts=3
+            until "$@"; do
+              if [ "$attempt" -ge "$max_attempts" ]; then
+                return 1
+              fi
+              attempt=$((attempt + 1))
+              sleep 20
+            done
+          }
+
+          retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo add falcosecurity https://falcosecurity.github.io/charts --force-update
+          retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm repo update
+          retry env KUBECONFIG=$RUNNER_TEMP/k3s.yaml helm upgrade --install falco falcosecurity/falco -n falco --create-namespace -f resources/falco/falco-values.yaml
 
       - name: Wait for Falco rollout
         run: |

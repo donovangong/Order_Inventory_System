@@ -33,11 +33,15 @@ jobs:
           docker build -t ca2-product-service:$IMAGE_TAG -t ca2-product-service:latest ./services/product-service
           docker build -t ca2-order-service:$IMAGE_TAG -t ca2-order-service:latest ./services/order-service
 
+      - name: Prepare Trivy cache
+        run: mkdir -p ~/.cache/trivy
+
       - name: Trivy scan frontend image
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: image
           image-ref: ca2-frontend:${{ steps.image_tag.outputs.image_tag }}
+          cache-dir: ~/.cache/trivy
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -48,6 +52,7 @@ jobs:
         with:
           scan-type: image
           image-ref: ca2-product-service:${{ steps.image_tag.outputs.image_tag }}
+          cache-dir: ~/.cache/trivy
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -58,6 +63,7 @@ jobs:
         with:
           scan-type: image
           image-ref: ca2-order-service:${{ steps.image_tag.outputs.image_tag }}
+          cache-dir: ~/.cache/trivy
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
