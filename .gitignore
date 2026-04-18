@@ -1,6 +1,4 @@
 node_modules/
 coverage/
 .env
-resources/backup/*.sql
 reports/
-
