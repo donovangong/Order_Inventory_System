@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict ZbmdKO3yeDV4RzBOpbtogHpRc24OivaVKjSQHMciyt6n0fGyueLZYf4uL67V6qs
+\restrict TxtwXoux7FcahN2IyyxgSNVeeMskH2KJmCRn6Yuai1cIwdRhe1dbbQOWPy0W90s
 
 -- Dumped from database version 15.17 (Debian 15.17-1.pgdg13+1)
 -- Dumped by pg_dump version 15.17 (Debian 15.17-1.pgdg13+1)
@@ -140,7 +140,7 @@ COPY public.products (id, name, price, stock) FROM stdin;
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 1, true);
 
 
 --
@@ -170,5 +170,5 @@ ALTER TABLE ONLY public.products
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ZbmdKO3yeDV4RzBOpbtogHpRc24OivaVKjSQHMciyt6n0fGyueLZYf4uL67V6qs
+\unrestrict TxtwXoux7FcahN2IyyxgSNVeeMskH2KJmCRn6Yuai1cIwdRhe1dbbQOWPy0W90s
 
