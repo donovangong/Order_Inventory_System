@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict EpeDpCN5Jqxrhn00qv3J3o1zq8VS0sGqU8rSD1tzr83rsehphKhJd1vcmXWvQKQ
+\restrict 9umPG8uKxd53i8yWmMaySg0xe7WK7hiAnZF6hQkqGLt1TbfY9O0y02K0JJV8727
 
 -- Dumped from database version 15.17 (Debian 15.17-1.pgdg13+1)
 -- Dumped by pg_dump version 15.17 (Debian 15.17-1.pgdg13+1)
@@ -131,8 +131,8 @@ COPY public.orders (id, product_id, quantity, total_price, created_at) FROM stdi
 
 COPY public.products (id, name, price, stock) FROM stdin;
 2	Mouse	19.99	20
-3	Monitor	149.99	5
 1	Keyboard	49.99	10
+3	Monitor	149.99	5
 \.
 
 
@@ -140,7 +140,7 @@ COPY public.products (id, name, price, stock) FROM stdin;
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 2, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 1, true);
 
 
 --
@@ -170,5 +170,5 @@ ALTER TABLE ONLY public.products
 -- PostgreSQL database dump complete
 --
 
-\unrestrict EpeDpCN5Jqxrhn00qv3J3o1zq8VS0sGqU8rSD1tzr83rsehphKhJd1vcmXWvQKQ
+\unrestrict 9umPG8uKxd53i8yWmMaySg0xe7WK7hiAnZF6hQkqGLt1TbfY9O0y02K0JJV8727
 
