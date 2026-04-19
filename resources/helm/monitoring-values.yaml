@@ -2,7 +2,16 @@ grafana:
   adminUser: admin
   adminPassword: admin
   defaultDashboardsEnabled: true
+  sidecar:
+    datasources:
+      defaultDatasourceEnabled: false
   additionalDataSources:
+    - name: Prometheus
+      uid: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      isDefault: true
     - name: Loki
       uid: Loki
       type: loki
