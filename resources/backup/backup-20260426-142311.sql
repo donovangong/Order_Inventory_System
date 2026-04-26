@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 9ZkcAactDUd8Iu2mwyEaaYvWzhsvHIcTUgfC079ZSlZu6EiLS84zu4OQ8J3ZqQF
+\restrict 5MMvgxgeDNpb0E6tIHdFDGgkaKfie0LJO8QkvIwQCLumPdg23siWHsK41CHi1EP
 
 -- Dumped from database version 15.17 (Debian 15.17-1.pgdg13+1)
 -- Dumped by pg_dump version 15.17 (Debian 15.17-1.pgdg13+1)
@@ -122,6 +122,7 @@ ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.pro
 --
 
 COPY public.orders (id, product_id, quantity, total_price, created_at) FROM stdin;
+1	1	1	49.99	2026-04-25 04:34:54.5617
 \.
 
 
@@ -131,8 +132,8 @@ COPY public.orders (id, product_id, quantity, total_price, created_at) FROM stdi
 
 COPY public.products (id, name, price, stock) FROM stdin;
 2	Mouse	19.99	20
+1	Keyboard	49.99	9
 3	Monitor	149.99	5
-1	Keyboard	49.99	10
 \.
 
 
@@ -140,7 +141,7 @@ COPY public.products (id, name, price, stock) FROM stdin;
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 1, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 4, true);
 
 
 --
@@ -170,5 +171,5 @@ ALTER TABLE ONLY public.products
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 9ZkcAactDUd8Iu2mwyEaaYvWzhsvHIcTUgfC079ZSlZu6EiLS84zu4OQ8J3ZqQF
+\unrestrict 5MMvgxgeDNpb0E6tIHdFDGgkaKfie0LJO8QkvIwQCLumPdg23siWHsK41CHi1EP
 
